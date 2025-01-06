@@ -33,8 +33,8 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="../images/Home.Page-04-logo.png">
     <meta name="theme-color" content="#ffffff">
-        <link rel="stylesheet" href="../cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-    <link rel="stylesheet" href="../cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="../assets/css/sweetalert.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
     <style>
         .fa {
             margin-left: 12px;
@@ -132,7 +132,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="d-md-flex align-items-center justify-content-center justify-content-lg-between">
-                        <h6 class="font-light text-white text-center text-lg-start">Delivoc inc. All Rights Reserved 2022.</h6>
+                        <h6 class="font-light text-white text-center text-lg-start">Delivoc inc. All Rights Reserved 2025.</h6>
                         <div class="d-lg-flex align-items-center">
                             <ul class="my-3 my-lg-0 d-flex justify-content-center justify-content-lg-end">
                                 <li><a class="me-3" href="#"><img src="../assets/images/paypal.svg" alt=""/></a></li>
@@ -159,8 +159,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
+            // Attach submit event to the form
             $('#complaint-form').submit(function (e) {
-                e.preventDefault();
+                e.preventDefault(); // Prevent the default form submission
             }).validate({
                 rules: {
                     username: 'required',
@@ -181,40 +182,49 @@
                     },
                 },
                 submitHandler: function (form) {
-                    $('#submit-btn').append('<i class="fa fa-spinner fa-spin"></i>')
+                    $('#submit-btn').append('<i class="fa fa-spinner fa-spin"></i>'); // Show spinner
+    
+                    // Collect form data
                     let formData = {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        params: {
+                            data: {
+                                name: $('input[name="username"]').val(),
+                                email: $('input[name="email"]').val(),
+                                subject: $('input[name="subject"]').val(),
+                                message: $('textarea[name="message"]').val(),
+                            }
+                        }
                     };
-                    $(form).serializeArray().map(function (field) {
-                        formData[field.name] = field.value;
-                    });
+    
+                    // Perform AJAX POST request
                     $.ajax({
                         type: 'POST',
-                        url: 'http://delivoc.com/api/v1/save-complaint',
-                        data: formData,
+                        url: 'http://161.97.108.117:10033/api/add/contactus',
+                        contentType: 'application/json',
+                        data: JSON.stringify(formData),
                         success: function (response) {
-                            if (response.status) {
-                                Swal.fire(
-                                    "Your message was sent successfully!",
-                                    "Your message will be answered as soon as possible",
-                                    'success'
-                                )
-                                $('.fa-spinner').remove()
-                                form.reset()
-                            }
+                            Swal.fire(
+                                "Success!",
+                                "Your message has been sent successfully.",
+                                "success"
+                            );
+                            $('#submit-btn .fa-spinner').remove(); // Remove spinner
+                            form.reset(); // Reset form fields
                         },
                         error: function (xhr, status, error) {
-
+                            Swal.fire(
+                                "Error!",
+                                "Something went wrong. Please try again later.",
+                                "error"
+                            );
+                            $('#submit-btn .fa-spinner').remove(); // Remove spinner
                         }
                     });
-
-
                 }
             });
-
         });
-
     </script>
+    
 </body>
 
 </html>
